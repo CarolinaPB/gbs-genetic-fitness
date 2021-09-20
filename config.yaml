@@ -1,1 +1,4 @@
-file1: path/to/file1 # Add your own files that will be used in the pipeline
+ASSEMBLY: /lustre/backup/WUR/ABGC/shared/ABGC_Projects/Meagre/assembly_final/meagre.fa
+READS: /lustre/backup/WUR/ABGC/shared/ABGC_Projects/Meagre/longreads/Meagre_nanopore/trimmed_reads/qcpass.fastq.gz
+PREFIX: meagre
+GENOME_SIZE: 6.8e8
