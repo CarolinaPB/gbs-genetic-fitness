@@ -2,3 +2,4 @@ ASSEMBLY: /lustre/backup/WUR/ABGC/shared/ABGC_Projects/Meagre/assembly_final/mea
 READS: /lustre/backup/WUR/ABGC/shared/ABGC_Projects/Meagre/longreads/Meagre_nanopore/trimmed_reads/qcpass.fastq.gz
 PREFIX: meagre
 GENOME_SIZE: 6.8e8
+PARAMETERS_FILE: fast-gbs_v2/parameters_meagre.txt
