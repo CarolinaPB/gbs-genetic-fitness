@@ -9,8 +9,12 @@ ASSEMBLY = config["ASSEMBLY"]
 READS = config["READS"]
 PREFIX = config["PREFIX"]
 GENOME_SIZE = config["GENOME_SIZE"]
+PARAMETERS_FILE = config["PARAMETERS_FILE"]
 
 idx_list = [".amb", ".ann", ".bwt", ".pac", ".sa", ".fai"]
+
+
+BARCODES, = glob_wildcards("fast-gbs_v2/barcodes/{barcodes}")
 
 localrules: one_line_fasta, change_fq_extension
 rule all:
@@ -19,7 +23,9 @@ rule all:
         expand("DATA/{prefix}_oneline.fa", prefix=PREFIX),
         expand('DATA/{prefix}.fq.gz', prefix=PREFIX),
         expand('{prefix}.longstitch.done', prefix=PREFIX),
-        expand("{prefix}.fa{idx}", prefix=PREFIX, idx = idx_list)
+        expand("fast-gbs_v2/refgenome/{prefix}.fa{idx}", prefix=PREFIX, idx = idx_list),
+        expand('fast-gbs_v2/barcodes/barcodes_{barcodes}', barcodes=BARCODES),
+        expand("fast-gbs_v2/results/{prefix}_FastGBS_platypus.vcf", prefix=PREFIX)
 
 
 rule one_line_fasta:
@@ -43,7 +49,7 @@ rule change_fq_extension:
         prefix=PREFIX
     run:
         if not input[0].endswith("fq.gz"):
-            shell("cp {input} {params.prefix}.fq.gz")
+            shell("cp {input} DATA/{params.prefix}.fq.gz")
 
 rule scaffolding_long_reads:
     input:
@@ -78,17 +84,49 @@ rule scaffolding_long_reads:
         """
 
 LONGSTITCH, = glob_wildcards("{longstitch}.ntLink-arks.longstitch-scaffolds.fa")
-print(LONGSTITCH)
+
 rule prep_ref:
     input:
-        LONGSTITCH[0] + ".ntLink-arks.longstitch-scaffolds.fa"
+        longstitch_done = rules.scaffolding_long_reads.output.done,
+        ref = LONGSTITCH[0] + ".ntLink-arks.longstitch-scaffolds.fa"
     output:
-        multiext("{prefix}.fa", ".amb", ".ann", ".bwt", ".pac", ".sa", ".fai")
+        refgenome = "fast-gbs_v2/refgenome/{prefix}.fa",
+        idx = multiext("fast-gbs_v2/refgenome/{prefix}.fa", ".amb", ".ann", ".bwt", ".pac", ".sa", ".fai")
     message:
         'Rule {rule} processing'
     shell:
         """
+cp {input.ref} {output.refgenome}
 module load samtools
-bwa index -a bwtsw {input}
-samtools faidx {input}
+bwa index -a bwtsw {output.refgenome}
+samtools faidx {output.refgenome}
         """
+
+rule convert_barcode_format:
+    input:
+        "fast-gbs_v2/barcodes/{barcodes}"
+    output:
+        'fast-gbs_v2/barcodes/barcodes_{barcodes}'
+    message:
+        'Rule {rule} processing'
+    shell:
+        """
+sh fast-gbs_v2/txt2unix.sh {input} > {output}
+rm {input}
+        """
+
+rule run_fast_GBS2:
+    input:
+        parameters = PARAMETERS_FILE,
+        barcodes = expand('fast-gbs_v2/barcodes/barcodes_{barcodes}', barcodes=BARCODES),
+        refgenome = rules.prep_ref.output
+    output:
+        # "fast-gbs_v2/results/List.bam",
+        "fast-gbs_v2/results/{prefix}_FastGBS_platypus.vcf",
+        "fast-gbs_v2/results/{prefix}_FastGBS_platypus.recode.vcf",
+        "fast-gbs_v2/results/{prefix}_FastGBS_platypus.GT.FORMAT",
+        "fast-gbs_v2/results/{prefix}_FastGBS_platypus_recode_imputed.vcf.gz"
+    message:
+        'Rule {rule} processing'
+    shell:
+        './fast-gbs_v2/fastgbs_V2.sh {input.parameters}'
