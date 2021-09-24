@@ -1,5 +1,5 @@
 ASSEMBLY: /lustre/backup/WUR/ABGC/shared/ABGC_Projects/Meagre/assembly_final/meagre.fa
-READS: /lustre/backup/WUR/ABGC/shared/ABGC_Projects/Meagre/longreads/Meagre_nanopore/trimmed_reads/qcpass.fastq.gz
+READS: data/CD5NCANXX_5.fq.gz
 PREFIX: meagre
 GENOME_SIZE: 6.8e8
-PARAMETERS_FILE: fast-gbs_v2/parameters_meagre.txt
+PARAMETERS_FILE: parameters_meagre.txt
