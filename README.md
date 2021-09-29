@@ -85,6 +85,92 @@ Do not put any extension, like .txt, to the filenames.
 
 Warning: Do not use special characters (such as: * / \ | $ " etc.) in the names given to your samples in the barcode file.
 
+#### 4. Follow the **Preparation of the parameters file** from the [FastGBS2 wiki](https://bitbucket.org/jerlar73/fast-gbs_v2/wiki/Home) AND see specific instructions below
+**You'll also need to do this in addition to what is written in the FastGBS wiki**
+Copy the contents of parameters_template.txt to a new file and name that file **parameters_<prefix>.txt**, where `<prefix>` is the name you'll use on the config file and that will be appended to the output. For example, it could be the name of your organism `parameters_chicken.txt`.   
+In the text you copied from `parameters_template.txt` there are some variables named `<prefix>_othername`. Where you see `<prefix>` you'll need to change it to the prefix you've chosen.   
+ From [FastGBS2 wiki](https://bitbucket.org/jerlar73/fast-gbs_v2/wiki/Home) -- If a step has **DIFFERENT**, follow the instructions in this page instead of the ones in the FastGBS wiki. These are changes specific to this pipeline  
+  
+**change only the fields in this section**  
+Parameter file is text file including all information related to GBS experiment and required data to run Fast-GBS_V2
+
+Below is an example of parameter file included in Fast-GBS pipeline. Here we separated each section with a description:
+
+1- Naming log file, FLOWCELL and LANES. This part is been detailed in the Preparation of the sequence data section  
+  **DIFFERENT**
+```
+; NAME OF FILE CONTAINING LOGS
+LOGFILE=<PREFIX>_logfile_fastgbs.log
+
+; FLOWCELL INFORMATION 
+FLOWCELL=ULYSSE HOMER HADES 
+
+; LANES INFORMATION
+ULYSSE_LANES=5 6
+HOMER_LANES=3 4
+HADES_LANES=1 2
+```
+2- The parameters used in Fast-GBS pipeline is different for each sequencing technology and sequence types (single- or paired-end). Please select the right technology and sequence type.
+```
+; SEQUENCING TECHNOLOGY: ILLUMINA IONTORRENT
+TECHNOLOGY=ILLUMINA
+
+; SEQUENCE TYPE: SE (Single End) or PE (Paired Ends)
+SEQTYPE=SE
+```
+3- Define the reference genome. The name should be exactly the same. If you want to use SRG please visit here. This part is been detailed in the Preparation of the reference genome section.  
+**DIFFERENT**
+```
+; NAME OF THE REFERENCE GENOME FILES
+REFGEN=<prefix>.fa
+```
+4- You should get the adaptor recognition sequence from your sequencing service platform. This sequence here is for Illumina and used by IBIS
+```
+; SEQUENCE USED FOR ADAPTOR RECOGNITION (THE COMPLETE ADAPTOR SEQUENCE IS
+; AGATCGGAAGAGCGGG)
+ADAPFOR=AGATCGGAA
+
+; IF PAIRED END READS, ADD ADAPTER SEQUENCE IN REVERSE SEQUENCE (R2)
+ADAPREV=AGATCGGAA
+```
+5- Sequencing reads length are different based on different technology, also dimers are short reads. Here you define the minimum length of the reads for mapping and variant calling.
+```
+; MINIMUM READ LENGTH TO KEEP
+READLEN=50
+```
+
+
+10- If you want to call variant from a database write the name VCF file desired to be used. Either write None. **NOT TESTED IN THIS PIPELINE**
+```
+; VARIANT CALING FROM A DATABASE: None or the name of a vcf file
+SOURCE=file_option.vcf
+```
+11- You can here define the minimum depth of coverage for variant calling.
+  ```
+; FOR PLATYPUS: Minimum number of supporting reads required before a
+; variant candidate will be considered (equivalent to minDP in vcftools)
+MINREADS=2
+  ```
+12- Name log file for variant calling step.
+```
+; PLATYPUS LOGFILE
+LOGPLAT=<prefix>_FastGBS_platypus_log.txt
+```
+13- Name your result VCF file name
+```
+; PLATYPUS OUTPUT VCF FILE
+OUTPLAT=<prefix>_FastGBS_platypus
+```
+14- Filtering steps
+```
+;PROPORTION OF MISSING DATA (0 to 1 (no missing data)) AND AND MAF (minimum allele frequency, 0 to 1)
+MAX-MISSING=0.2
+MAF=0.01
+```
+Verify the information in the file parameters.txt. If necessary, change the value given to the variables. It is very important not to change the words in capital letters (before the sign =). If you do this, you will get an error message because the pipeline will not find that variable. Respect what is an integer and a string.
+ 
+
+
 ### Edit config.yaml with the paths to your files
 ```
 ASSEMBLY: /path/to/assembly
