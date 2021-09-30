@@ -17,6 +17,11 @@ In order to assess genetic fitness, it calculates a distance matrix, IBD and loo
 - Bcftools - get stats from vcf
 - Plink - calculate distance matrix, IBD, homozygosity
 
+#### If you want to skip the scaffolding step do this:
+1. Add your genome to the `refgenome` directory and name it as <prefix>.fa (it's important to have the .fa extension). 
+2. Index with bwa by running the `index_genome.sh` script in the `scripts` directory from the main directory as `./scripts/index_genome.sh`
+You will get two files with assembly stats, but both will have the same information.
+
 # REPLACE WORKFLOW
 | ![DAG](https://github.com/CarolinaPB/population-mapping/blob/wur/workflow.png) |
 |:--:|
