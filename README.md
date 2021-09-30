@@ -153,7 +153,6 @@ SOURCE=file_option.vcf
 ; variant candidate will be considered (equivalent to minDP in vcftools)
 MINREADS=2
   ```
-12- Name log file for variant calling step.    
  **DIFFERENT - edit the file name with your prefix**
 ```
 ; PLATYPUS LOGFILE
@@ -190,8 +189,32 @@ PARAMETERS_FILE: <parameters file>
 - GENOME_SIZE - approximate genome size ```haploid genome size (bp)(e.g. '3e9' for human genome)``` from [longstitch](https://github.com/bcgsc/longstitch#full-help-page)
 - PARAMETERS_FILE - name of FastGBS2 parameters file
 
+ ## Working directory
+ There are many files and directories that you don't need to pay attention to, but they need to be there for the pipeline to run.  
+The directories and files that should not be touched beyond what is stated in the preparation steps are:
+- **barcodes** - where you'll add your barcode files
+- **data** - where you'll add your fq.gz files and where the demultiplexed fq files will be added, as well as the mapped .bam files
+- **refgenome** where the scaffolded genome will be
+- **reject**
+- **rules** extra snakemake rules
+- **scripts** scripts used in the pipeline
+- **stat**  where the missing samples will be. Samples with less than 10% of the mean number of reads in the pool will be moved here and removed from next steps
+- **wiki** wiki from FastGBS2
+- FastGBS scripts:
+  - count_nbseq_V2.sh
+  - fastgbs_V2.sh
+  - makeBarcodeSabre_V2.py
+  - makeDir_V2.sh
+  - SLURM_GBS.sh
+  - Summary4VCF.py
+  - txt2unix.sh
+- Many files with the name starting in \<prefix>_oneline.fa will be created by the scaffolding tool. The scaffolded genome will be in the **refgenome** directory.  
+ This pipeline saves the results to several folders in the running directory. Since this pipeline will create many files, some of them saved to the main directory, it will look quite messy.  
+ Below you'll find an overview of the most important results
+ 
+ 
  ## RESULTS
-The working directory will be messy with all the necessary files and results from the several steps ran.
+The working directory will be messy with all the necessary files and results from the several pipeline steps.
 The most important files are and directories are:  
 - **<run_date>_files.txt** dated file with an overview of the files used to run the pipeline (for documentation purposes)
 - **refgenome** directory that contains scaffolded genome
