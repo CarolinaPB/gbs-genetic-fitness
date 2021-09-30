@@ -1,5 +1,6 @@
 ASSEMBLY: /lustre/backup/WUR/ABGC/shared/ABGC_Projects/Meagre/assembly_final/meagre.fa
-READS: data/CD5NCANXX_5.fq.gz
+LONGREADS: qcpass.fq.gz
 PREFIX: meagre
 GENOME_SIZE: 6.8e8
 PARAMETERS_FILE: parameters_meagre.txt
+
