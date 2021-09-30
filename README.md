@@ -17,6 +17,7 @@ In order to assess genetic fitness, it calculates a distance matrix, IBD and loo
 - Bcftools - get stats from vcf
 - Plink - calculate distance matrix, IBD, homozygosity
 
+# REPLACE WORKFLOW
 | ![DAG](https://github.com/CarolinaPB/population-mapping/blob/wur/workflow.png) |
 |:--:|
 |*Pipeline workflow* |
@@ -86,7 +87,7 @@ Do not put any extension, like .txt, to the filenames.
 Warning: Do not use special characters (such as: * / \ | $ " etc.) in the names given to your samples in the barcode file.
 
 #### 4. Follow the **Preparation of the parameters file** from the [FastGBS2 wiki](https://bitbucket.org/jerlar73/fast-gbs_v2/wiki/Home) AND see specific instructions below
-**You'll also need to do this in addition to what is written in the FastGBS wiki**
+**You'll also need to do this in addition to what is written in the FastGBS wiki**  
 Copy the contents of parameters_template.txt to a new file and name that file **parameters_<prefix>.txt**, where `<prefix>` is the name you'll use on the config file and that will be appended to the output. For example, it could be the name of your organism `parameters_chicken.txt`.   
 In the text you copied from `parameters_template.txt` there are some variables named `<prefix>_othername`. Where you see `<prefix>` you'll need to change it to the prefix you've chosen.   
  From [FastGBS2 wiki](https://bitbucket.org/jerlar73/fast-gbs_v2/wiki/Home) -- If a step has **DIFFERENT**, follow the instructions in this page instead of the ones in the FastGBS wiki. These are changes specific to this pipeline  
@@ -97,7 +98,7 @@ Parameter file is text file including all information related to GBS experiment 
 Below is an example of parameter file included in Fast-GBS pipeline. Here we separated each section with a description:
 
 1- Naming log file, FLOWCELL and LANES. This part is been detailed in the Preparation of the sequence data section  
-  **DIFFERENT**
+  **DIFFERENT -- edit the log file name with your prefix \<prefix>_logfile_fastgbs.log**
 ```
 ; NAME OF FILE CONTAINING LOGS
 LOGFILE=<PREFIX>_logfile_fastgbs.log
@@ -119,7 +120,7 @@ TECHNOLOGY=ILLUMINA
 SEQTYPE=SE
 ```
 3- Define the reference genome. The name should be exactly the same. If you want to use SRG please visit here. This part is been detailed in the Preparation of the reference genome section.  
-**DIFFERENT**
+**DIFFERENT -- edit the REFGEN file name with your prefix**
 ```
 ; NAME OF THE REFERENCE GENOME FILES
 REFGEN=<prefix>.fa
@@ -140,7 +141,8 @@ READLEN=50
 ```
 
 
-10- If you want to call variant from a database write the name VCF file desired to be used. Either write None. **NOT TESTED IN THIS PIPELINE**
+10- If you want to call variant from a database write the name VCF file desired to be used. Either write None.   
+**DIFFERENT - NOT TESTED IN THIS PIPELINE**
 ```
 ; VARIANT CALING FROM A DATABASE: None or the name of a vcf file
 SOURCE=file_option.vcf
@@ -151,12 +153,14 @@ SOURCE=file_option.vcf
 ; variant candidate will be considered (equivalent to minDP in vcftools)
 MINREADS=2
   ```
-12- Name log file for variant calling step.
+12- Name log file for variant calling step.    
+ **DIFFERENT - edit the file name with your prefix**
 ```
 ; PLATYPUS LOGFILE
 LOGPLAT=<prefix>_FastGBS_platypus_log.txt
 ```
-13- Name your result VCF file name
+13- Name your result VCF file name  
+ **DIFFERENT - edit the file name with your prefix**
 ```
 ; PLATYPUS OUTPUT VCF FILE
 OUTPLAT=<prefix>_FastGBS_platypus
