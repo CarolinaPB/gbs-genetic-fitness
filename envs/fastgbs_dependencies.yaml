@@ -1,0 +1,35 @@
+name: platypus
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - _libgcc_mutex=0.1=conda_forge
+  - _openmp_mutex=4.5=1_gnu
+  - beagle=5.2_21Apr21.304=hdfd78af_0
+  - bz2file=0.98=py_0
+  - ca-certificates=2021.5.30=ha878542_0
+  - certifi=2019.11.28=py27h8c360ce_1
+  - cutadapt=1.18=py27h14c3975_1
+  - ld_impl_linux-64=2.36.1=hea4e1c9_2
+  - libffi=3.2.1=he1b5a44_1007
+  - libgcc-ng=11.2.0=h1d223b6_8
+  - libgomp=11.2.0=h1d223b6_8
+  - libstdcxx-ng=11.2.0=he4da1e4_8
+  - ncurses=6.2=h58526e2_4
+  - openjdk=11.0.1=h516909a_1016
+  - openssl=1.1.1l=h7f98852_0
+  - pigz=2.6=h27826a3_0
+  - pip=20.1.1=pyh9f0ad1d_0
+  - python=2.7.15=h5a48372_1011_cpython
+  - python_abi=2.7=1_cp27mu
+  - pyvcf=0.6.8=py27_0
+  - readline=8.1=h46c0cb4_0
+  - sabre=1.000=h5bf99c6_2
+  - setuptools=44.0.0=py27_0
+  - sqlite=3.36.0=h9cd32fc_2
+  - tk=8.6.11=h27826a3_1
+  - wheel=0.37.0=pyhd8ed1ab_1
+  - xopen=0.7.3=py_0
+  - zlib=1.2.11=h516909a_1010
+prefix: /home/WUR/moiti001/miniconda3/envs/platypus
