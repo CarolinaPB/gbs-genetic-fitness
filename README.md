@@ -189,3 +189,14 @@ PARAMETERS_FILE: <parameters file>
 - PREFIX -  prefix for the created files
 - GENOME_SIZE - approximate genome size ```haploid genome size (bp)(e.g. '3e9' for human genome)``` from [longstitch](https://github.com/bcgsc/longstitch#full-help-page)
 - PARAMETERS_FILE - name of FastGBS2 parameters file
+
+ ## RESULTS
+The working directory will be messy with all the necessary files and results from the several steps ran.
+The most important files are and directories are:  
+- **<run_date>_files.txt** dated file with an overview of the files used to run the pipeline (for documentation purposes)
+- **refgenome** directory that contains scaffolded genome
+- **results** directory that contains
+ - **assembly_stats_<prefix>_new.txt** and **assembly_stats_<prefix>_old.txt** files with assembly statistics for the new scaffolded assembly and for the assembly before the extra scaffolding
+ - **{prefix}_FastGBS_platypus.vcf** final VCF file
+ - **Summary_By_Samples_python.txt** and **Summary_By_Sites_python.txt** GBS summary stats from FastGBS2
+
