@@ -24,6 +24,7 @@ In order to assess genetic fitness, it calculates a distance matrix, IBD and loo
 
 ## Set up
 #### 1. Copy your long reads fq.gz file to the working directory (where the config.yaml and Snakefile are).
+The reads must have .fq.gz or .fa.gz extension
 #### 2. Follow the **Preparation of the sequence data** from the [FastGBS2 wiki](https://bitbucket.org/jerlar73/fast-gbs_v2/wiki/Home) or see below
 
 Move your sequence files fastq in the data directory. Each file must be in the following format:
