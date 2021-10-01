@@ -23,7 +23,7 @@ In order to assess genetic fitness, it calculates a distance matrix, IBD and loo
 You will get two files with assembly stats, but both will have the same information.
 
 # REPLACE WORKFLOW
-| ![DAG](https://github.com/CarolinaPB/population-mapping/blob/wur/workflow.png) |
+| ![DAG](https://github.com/CarolinaPB/gbs-genetic-fitness/blob/master/workflow.png) |
 |:--:|
 |*Pipeline workflow* |
 
