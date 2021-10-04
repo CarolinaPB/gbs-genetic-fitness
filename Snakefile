@@ -1,7 +1,6 @@
 configfile: "config.yaml"
 
-pipeline = "gbs-genetic-fitness" # replace with your pipeline's name
-
+pipeline = "gbs-genetic-fitness"
 
 include: "rules/create_file_log.smk"
 
@@ -257,73 +256,3 @@ rule plot_pca:
         output = os.path.join("results",PREFIX),
     shell:
         "python {params.pyscript} --eigenval {input.eigenval} --eigenvec {input.eigenvec} --out {params.output}"
-
-        # Rscript {params.rscript} --eigenvec={output.eigenvec} --eigenval={output.eigenval} --output={output.pdf} --sample_list={input.sample_list}
-
-#to install platypus
-# download from here
-# module load python  python/2.7.15
-# module load htslib
-
-#https://www.well.ox.ac.uk/research/research-groups/lunter-group/lunter-group/platypus-a-haplotype-based-variant-caller-for-next-generation-sequence-data
-# Place where you want to install
-# tar -xvzf Platypus_x.x.x.tgz
-# cd Platypus_x.x.x
-# ./buildPlatypus.sh
-
-# export PATH=/lustre/nobackup/WUR/ABGC/moiti001/TOOLS/Platypus_0.8.1:$PATH
-
-
-# move fq files to data/ dir and rename to be 
-# Paired-end reads:
-
-#     FLOWCELL_LANE#_R1.fq.gz
-#     FLOWCELL_LANE#_R2.fq.gz
-# Single-end reads:
-
-#     FLOWCELL_LANE#.fq.gz
-
-
-# rule convert_barcode_format:
-#     input:
-#         "DATA/barcodes/{barcodes}"
-#     output:
-#         'barcodes/barcodes_{barcodes}'
-#     message:
-#         'Rule {rule} processing'
-#     shell:
-#         """
-# sh txt2unix.sh {input} > {output}
-        # """
-
-
-
-        # "{prefix}_oneline.fa.{ls0}.tsv",
-        # multiext("{prefix}_oneline.fa.{ls1}", ".ntLink.scaffolds.fa", ".stitch.abyss-scaffold.fa", ".stitch.abyss-scaffold.renamed.fa"),
-        # multiext("{prefix}_oneline.fa.{longstitch}", 
-        # ".dist.gv", 
-        # "_main.tsv", 
-        # "_original.gv", 
-        # ".tigpair_checkpoint.tsv"),
-        # multiext("{prefix}_oneline.fa.{longstitch}_{longstitch_2}", 
-        # ".assembly_correspondence.tsv"
-        # ".gv", 
-        # ".log", 
-        # ".scaffolds", 
-        # ".scaffolds.fa"),
-        # ls ="{ls2}.ntLink-arks.longstitch-scaffolds.fa"
-
-        # rule change_fq_extension:
-#     input:
-#         READS
-#     output:
-#         'DATA/{prefix}.fq.gz'
-#     message:
-#         'Rule {rule} processing'
-#     params:
-#         prefix=PREFIX
-#     run:
-#         if not input[0].endswith("fq.gz"):
-#             shell("cp {input} data/{params.prefix}.fq.gz")
-#         else:
-#             shell("cp {input} data/")
