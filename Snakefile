@@ -13,7 +13,7 @@ PARAMETERS_FILE = config["PARAMETERS_FILE"]
 idx_list = [".amb", ".ann", ".bwt", ".pac", ".sa", ".fai"]
 
 
-localrules: one_line_fasta, get_assembly_stats, plink_dist_matr, plink_IBD, bcftools_stats, plink_inbreeding, plot_pca
+localrules: one_line_fasta, get_assembly_stats, plink_dist_matr, plink_IBD, bcftools_stats, plink_inbreeding, plot_pca, cleanup_data_dir
 rule all:
     input:
         files_log,
@@ -29,7 +29,8 @@ rule all:
         expand("fitness/{prefix}.het.gz", prefix=PREFIX),
         # expand("results/{prefix}.eigenvec", prefix=PREFIX),
         # expand("results/{prefix}.eigenval", prefix=PREFIX),
-        expand('results/{prefix}_pca.html', prefix=PREFIX)
+        expand('results/{prefix}_pca.html', prefix=PREFIX),
+        expand("{prefix}.cleanup.done", prefix=PREFIX)
         
 
 
@@ -256,3 +257,13 @@ rule plot_pca:
         output = os.path.join("results",PREFIX),
     shell:
         "python {params.pyscript} --eigenval {input.eigenval} --eigenvec {input.eigenvec} --out {params.output}"
+
+rule cleanup_data_dir:
+    input:
+        rules.zip_index_vcf.output
+    output:
+        touch("{prefix}.cleanup.done")
+    message:
+        'Rule {rule} processing'
+    shell:
+        'rm data/*.fastq'
