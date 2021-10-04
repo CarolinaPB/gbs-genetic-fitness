@@ -5,7 +5,7 @@
 Click [here](https://github.com/CarolinaPB/snakemake-template/blob/master/Short%20introduction%20to%20Snakemake.pdf) for an introduction to Snakemake
 
 ## ABOUT
-This pipeline starts by scaffolding your genome using long reads. Then it performs GBS using FastGBS2 and outputs stats and a PCA.  
+This pipeline starts by scaffolding your genome using long reads. Then it performs GBS using FastGBS2 (it skips the imputation step) and outputs stats and a PCA.  
 In order to assess genetic fitness, it calculates a distance matrix, IBD and inbreeding.
 
 #### Tools used:
