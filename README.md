@@ -236,3 +236,22 @@ The most important files are and directories are:
    - **{prefix}.het.gz** inbreeding results: [Plink](https://www.cog-genomics.org/plink/1.9/basic_stats) computes observed and expected autosomal homozygous genotype counts for each sample, and reports method-of-moments F coefficient estimates 
    - **{prefix}.genome.gz** IBD results (see [here](https://www.cog-genomics.org/plink/1.9/ibd))
    - **{prefix}.dist.gz** and **{prefix}.dist.id** distance matrix and sample ids as described [here](https://www.cog-genomics.org/plink/1.9/distance)
+
+## OTHER
+ If you need to install platypus yourself:
+ 1. Download Platypus from [here](https://www.well.ox.ac.uk/research/research-groups/lunter-group/lunter-group/platypus-a-haplotype-based-variant-caller-for-next-generation-sequence-data)
+ 2. Load python 2.7 and htslib. If you're in Anunna:
+ ```
+ module load python/2.7.15
+ module load htslib
+ ```
+ 3. Build
+ ```
+tar -xvzf Platypus_x.x.x.tgz
+cd Platypus_x.x.x
+./buildPlatypus.sh
+ ```
+ 4. Add Platypus to your PATH
+ ```
+ export PATH=/path/to/intallation/Platypus_x.x.x:$PATH
+ ```
