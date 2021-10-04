@@ -255,3 +255,5 @@ cd Platypus_x.x.x
  ```
  export PATH=/path/to/intallation/Platypus_x.x.x:$PATH
  ```
+ 
+ If you use your own installation of Platypus, in the Snakefile, rule `run_fast_GBS2`, you should edit the line `export PATH=/lustre/nobackup/WUR/ABGC/moiti001/TOOLS/Platypus_0.8.1:$PATH` to the path to your installation, as above.
