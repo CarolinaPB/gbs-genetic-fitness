@@ -21,15 +21,15 @@ rule all:
         # expand("{prefix}_oneline.fa", prefix=PREFIX),
         # expand("refgenome/{prefix}.fa{idx}", prefix=PREFIX, idx = idx_list),
         # expand("results/assembly_stats_{prefix}_{version}.txt", prefix = PREFIX, version = ["old", "new"]),
-        # expand("results/{prefix}_FastGBS_platypus.vcf", prefix = PREFIX),
+        expand("results/{prefix}_FastGBS_platypus.recode.vcf.gz", prefix = PREFIX),
         # expand("results/{prefix}_FastGBS_platypus_log.txt", prefix = PREFIX),
-        expand("results/{prefix}_FastGBS_platypus.vcf.gz.stats", prefix=PREFIX),
+        expand("results/{prefix}_FastGBS_platypus.recode.vcf.gz.stats", prefix=PREFIX),
         expand("fitness/{prefix}.dist.gz", prefix=PREFIX),
         expand("fitness/{prefix}.genome.gz", prefix=PREFIX),
         expand("{prefix}_fastgbs_check.done", prefix=PREFIX),
         expand("fitness/{prefix}.het.gz", prefix=PREFIX),
-        expand("results/{prefix}.eigenvec", prefix=PREFIX),
-        expand("results/{prefix}.eigenval", prefix=PREFIX),
+        # expand("results/{prefix}.eigenvec", prefix=PREFIX),
+        # expand("results/{prefix}.eigenval", prefix=PREFIX),
         expand('results/{prefix}_pca.html', prefix=PREFIX)
         
 
@@ -116,7 +116,7 @@ rule create_fastgbs_checkpoint_file:
         'Rule {rule} processing'
     shell:
         """
-printf 'IMPUTATION\nSUMMARY' > {output}
+printf 'IMPUTATION' > {output}
         """
 
 rule run_fast_GBS2:
@@ -126,10 +126,11 @@ rule run_fast_GBS2:
         checkpoint = rules.create_fastgbs_checkpoint_file.output
     output:
         # vcf = "results/{prefix}_FastGBS_platypus.vcf",
-        # "results/{prefix}_FastGBS_platypus.recode.vcf",
-        # "results/{prefix}_FastGBS_platypus.GT.FORMAT",
+        # vcf_filtered ="results/{prefix}_FastGBS_platypus.recode.vcf",
         # log = "results/{prefix}_FastGBS_platypus_log.txt",
         check = touch("{prefix}_fast_gbs.done"),
+        # GT = "results/{prefix}_FastGBS_platypus.recode.GT.FORMAT",
+
     message:
         'Rule {rule} processing'
     conda:
@@ -143,13 +144,14 @@ rule run_fast_GBS2:
         ./fastgbs_V2.sh {input.parameters}
         """
 
-rule index_vcf:
+rule zip_index_vcf:
     input:
         rules.run_fast_GBS2.output.check,
-        vcf = "results/{prefix}_FastGBS_platypus.vcf"
+        vcf = "results/{prefix}_FastGBS_platypus.recode.vcf"
+        # vcf = rules.run_fast_GBS2.output.vcf_filtered
     output:
-        vcf = "results/{prefix}_FastGBS_platypus.vcf.gz",
-        idx = "results/{prefix}_FastGBS_platypus.vcf.gz.tbi"
+        vcf = "results/{prefix}_FastGBS_platypus.recode.vcf.gz",
+        idx = "results/{prefix}_FastGBS_platypus.recode.vcf.gz.tbi"
     message:
         'Rule {rule} processing'
     shell:
@@ -162,11 +164,11 @@ rule index_vcf:
 
 rule bcftools_stats:
     input:
-        rules.run_fast_GBS2.output.check,
-        vcf = "results/{prefix}_FastGBS_platypus.vcf.gz",
-        idx = "results/{prefix}_FastGBS_platypus.vcf.gz.tbi"
+        # rules.run_fast_GBS2.output.check,
+        vcf = rules.zip_index_vcf.output.vcf, 
+        idx = rules.zip_index_vcf.output.idx
     output:
-        "results/{prefix}_FastGBS_platypus.vcf.gz.stats"
+        "results/{prefix}_FastGBS_platypus.recode.vcf.gz.stats"
     message:
         'Rule {rule} processing'
     shell:
@@ -178,8 +180,8 @@ rule bcftools_stats:
 
 rule plink_dist_matr:
     input:
-        vcf = "results/{prefix}_FastGBS_platypus.vcf.gz",
-        idx = "results/{prefix}_FastGBS_platypus.vcf.gz.tbi"
+        vcf = rules.zip_index_vcf.output.vcf, 
+        idx = rules.zip_index_vcf.output.idx
     output:
         "fitness/{prefix}.dist.gz"
     message:
@@ -194,8 +196,8 @@ plink --vcf {input.vcf} --distance gz --out {params.prefix} --double-id --allow-
 
 rule plink_IBD:
     input:
-        vcf = "results/{prefix}_FastGBS_platypus.vcf.gz",
-        idx = "results/{prefix}_FastGBS_platypus.vcf.gz.tbi"
+        vcf = rules.zip_index_vcf.output.vcf, 
+        idx = rules.zip_index_vcf.output.idx
     output:
         "fitness/{prefix}.genome.gz"
     message:
@@ -210,8 +212,8 @@ plink --vcf {input.vcf} --genome "gz" --out {params.prefix} --double-id --allow-
 
 rule plink_inbreeding:
     input:
-        vcf = "results/{prefix}_FastGBS_platypus.vcf.gz",
-        idx = "results/{prefix}_FastGBS_platypus.vcf.gz.tbi"
+        vcf = rules.zip_index_vcf.output.vcf, 
+        idx = rules.zip_index_vcf.output.idx
     output:
         "fitness/{prefix}.het.gz"
     message:
@@ -226,8 +228,8 @@ plink --vcf {input.vcf} --het "gz" --out {params.prefix} --double-id --allow-ext
 
 rule PCA:
     input:
-        vcf = "results/{prefix}_FastGBS_platypus.vcf.gz",
-        idx = "results/{prefix}_FastGBS_platypus.vcf.gz.tbi"
+        vcf = rules.zip_index_vcf.output.vcf,
+        idx = rules.zip_index_vcf.output.idx
     output:
         eigenvec = "results/{prefix}.eigenvec",
         eigenval = "results/{prefix}.eigenval",
