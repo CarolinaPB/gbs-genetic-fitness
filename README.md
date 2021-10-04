@@ -159,7 +159,7 @@ SOURCE=file_option.vcf
 ; variant candidate will be considered (equivalent to minDP in vcftools)
 MINREADS=2
   ```
- **DIFFERENT - edit the file name with your prefix**
+12- **DIFFERENT - edit the file name with your prefix**
 ```
 ; PLATYPUS LOGFILE
 LOGPLAT=<prefix>_FastGBS_platypus_log.txt
