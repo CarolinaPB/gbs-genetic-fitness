@@ -6,7 +6,7 @@ Click [here](https://github.com/CarolinaPB/snakemake-template/blob/master/Short%
 
 ## ABOUT
 This pipeline starts by scaffolding your genome using long reads. Then it performs GBS using FastGBS2 and outputs stats and a PCA.  
-In order to assess genetic fitness, it calculates a distance matrix, IBD and looks at runs of homozygosity
+In order to assess genetic fitness, it calculates a distance matrix, IBD and inbreeding.
 
 #### Tools used:
 - Seqtk - convert fasta to one line fasta
