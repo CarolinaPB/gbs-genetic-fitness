@@ -597,7 +597,7 @@ if [ "${Step}" != "IMPUTATION" ]
 		cd results
 			vcftools --vcf "${outplat}".vcf --remove-filtered-all --max-missing ${maxmis} --maf ${maf} --remove-indels --mac 1 --min-alleles 2 --max-alleles 2 --recode --out "${outplat}"
 		
-			java -Xmx25000m -jar /lustre/nobackup/WUR/ABGC/moiti001/TOOLS/beagle.28Jun21.220.jar gt="${outplat}".recode.vcf out="${outplat}"_recode_imputed
+			java -Xmx50000m -jar /lustre/nobackup/WUR/ABGC/moiti001/TOOLS/beagle.28Jun21.220.jar gt="${outplat}".recode.vcf out="${outplat}"_recode_imputed
 
 		if [ $? -ne 0 ]
 			then 
@@ -616,9 +616,12 @@ Step=$(grep "SUMMARY" checkpoint_${1})
 if [ "${Step}" != "SUMMARY" ]
 	then
 		cd results
+			vcftools --vcf "${outplat}".vcf --remove-filtered-all --max-missing ${maxmis} --maf ${maf} --remove-indels --mac 1 --min-alleles 2 --max-alleles 2 --recode --out "${outplat}"
 			vcftools --vcf "${outplat}".recode.vcf --extract-FORMAT-info GT --out "${outplat}".recode
 			../Summary4VCF.py "${outplat}".recode.GT.FORMAT
 
+			# vcftools --vcf "${outplat}".vcf --extract-FORMAT-info GT --out "${outplat}".recode
+			# ../Summary4VCF.py "${outplat}".recode.GT.FORMAT
 		if [ $? -ne 0 ]
 			then 
 				printf "\t!!! There is a problem at the summary step\n" | tee -a ../"${logfile}"
