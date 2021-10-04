@@ -228,7 +228,7 @@ The most important files are and directories are:
   - **assembly_stats_<prefix>_new.txt** and **assembly_stats_<prefix>_old.txt** files with assembly statistics for the new scaffolded assembly and for the assembly before the extra scaffolding
   - **{prefix}_FastGBS_platypus.vcf** raw VCF file including all variants with PASS or FILTERED flag
   - **{prefix}_FastGBS_platypus.recode.vcf** filtered VCF file including only variants with PASS flag and meeting filtering criteria defined in parameters file
-  - **FastGBS_platypus.GT.FORMAT** VCF file with only genotypes
+  - **{prefix}_FastGBS_platypus.GT.FORMAT** VCF file with only genotypes
   - **Summary_By_Samples_python.txt** and **Summary_By_Sites_python.txt** GBS summary stats from FastGBS2
   - **{prefix}_pca.html** interactive PCA where you can zoom in and hover a certain point to get sample name (open with browser)
   - **{prefix}.eigenvec** and **{prefix}.eigenval** output of PCA
