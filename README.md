@@ -22,7 +22,6 @@ In order to assess genetic fitness, it calculates a distance matrix, IBD and inb
 2. Index with bwa by running the `index_genome.sh` script in the `scripts` directory from the main directory as `./scripts/index_genome.sh`
 You will get two files with assembly stats, but both will have the same information.
 
-# REPLACE WORKFLOW
 | ![DAG](https://github.com/CarolinaPB/gbs-genetic-fitness/blob/master/workflow.png) |
 |:--:|
 |*Pipeline workflow* |
