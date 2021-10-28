@@ -4,3 +4,18 @@ PREFIX: meagre
 GENOME_SIZE: 6.8e8
 PARAMETERS_FILE: parameters_meagre.txt
 
+# genome alignment parameters:
+COMPARISON_GENOME: 
+  stickleback: /lustre/nobackup/WUR/ABGC/moiti001/TOOLS/Data/ncbi-genomes-2021-10-19/GCF_016920845.1_GAculeatus_UGA_version5_genomic.fna.gz
+  # tilapia: /lustre/nobackup/WUR/ABGC/moiti001/TOOLS/Data/Oreochromis_niloticus.O_niloticus_UMD_NMBU.dna.toplevel.fa.gz
+
+# filter alignments less than cutoff X bp
+# MIN_ALIGNMENT_LENGTH: 100
+# MIN_QUERY_LENGTH: 500
+
+# try two
+# MIN_ALIGNMENT_LENGTH: 10000
+# MIN_QUERY_LENGTH: 50000
+
+MIN_ALIGNMENT_LENGTH: 0
+MIN_QUERY_LENGTH: 0
