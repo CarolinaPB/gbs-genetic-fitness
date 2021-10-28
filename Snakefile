@@ -12,6 +12,16 @@ PARAMETERS_FILE = config["PARAMETERS_FILE"]
 
 idx_list = [".amb", ".ann", ".bwt", ".pac", ".sa", ".fai"]
 
+MIN_ALIGNMENT_LENGTH = config["MIN_ALIGNMENT_LENGTH"]
+MIN_QUERY_LENGTH = config["MIN_QUERY_LENGTH"]
+
+if "COMPARISON_GENOME" in config:
+    for species in config["COMPARISON_GENOME"]:
+        comp_genome_results = expand("genome_alignment/{prefix}_{species}.png", prefix=PREFIX, species = species)
+        COMP_GENOME = config["COMPARISON_GENOME"][species]
+else:
+    comp_genome_results = []
+
 
 localrules: one_line_fasta, get_assembly_stats, plink_dist_matr, plink_IBD, bcftools_stats, plink_inbreeding, plot_pca, cleanup_data_dir
 rule all:
@@ -30,7 +40,8 @@ rule all:
         # expand("results/{prefix}.eigenvec", prefix=PREFIX),
         # expand("results/{prefix}.eigenval", prefix=PREFIX),
         expand('results/{prefix}_pca.html', prefix=PREFIX),
-        expand("{prefix}.cleanup.done", prefix=PREFIX)
+        expand("{prefix}.cleanup.done", prefix=PREFIX),
+        comp_genome_results
         
 
 
@@ -267,3 +278,36 @@ rule cleanup_data_dir:
         'Rule {rule} processing'
     shell:
         'rm data/*.fastq'
+
+if "COMPARISON_GENOME" in config:
+    rule align_genomes:
+        input:
+            assembly = rules.prep_ref.output.refgenome,
+            comparison = COMP_GENOME
+        output:
+            "genome_alignment/{prefix}_vs_{species}.paf"
+        message:
+            'Rule {rule} processing'
+        shell:
+            """
+    minimap2 -t 12 -cx asm20 {input.comparison} {input.assembly} > {output}
+            """
+
+    rule plot_aligned_genomes:
+        input:
+            rules.align_genomes.output
+        output:
+            # "genome_alignment/{prefix}.html"
+            "genome_alignment/{prefix}_{species}.png"
+        message:
+            'Rule {rule} processing'
+        params:
+            script = os.path.join(workflow.basedir, "scripts/pafCoordsDotPlotly.R"),
+            min_alignment_length = MIN_ALIGNMENT_LENGTH,
+            min_query_length = MIN_QUERY_LENGTH
+        shell:
+            """
+            module load R
+            Rscript {params.script} -i {input} -o {wildcards.prefix}_{wildcards.species} -s -t -x -m {params.min_alignment_length} -q {params.min_query_length} -l
+            mv {wildcards.prefix}_{wildcards.species}.png genome_alignment/
+            """
