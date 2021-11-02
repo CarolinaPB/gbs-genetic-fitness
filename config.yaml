@@ -1,0 +1,13 @@
+ASSEMBLY: /path/to/assembly.fa
+LONGREADS: <longreads.fq.gz>
+PREFIX: <prefix>
+GENOME_SIZE: <approximate genome size>
+PARAMETERS_FILE: parameters_<prefix>.txt
+RUN_SCAFFOLDING: Y
+
+# genome alignment parameters:
+COMPARISON_GENOME: 
+  <species>: /path/to/comparison/genome.fa
+
+MIN_ALIGNMENT_LENGTH: 10000
+MIN_QUERY_LENGTH: 50000
