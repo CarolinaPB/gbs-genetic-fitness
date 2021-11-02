@@ -1,4 +1,4 @@
-configfile: "config.yaml"
+configfile: "config_meagre.yaml"
 
 pipeline = "gbs-genetic-fitness"
 
@@ -161,11 +161,11 @@ rule run_fast_GBS2:
         "envs/fastgbs2_dependencies.yaml"
     shell:
         """
-        module load samtools bwa vcftools bedtools
-        export PATH=/lustre/nobackup/WUR/ABGC/moiti001/TOOLS/Platypus_0.8.1:$PATH
-        # export PATH=/lustre/nobackup/WUR/ABGC/moiti001/TOOLS/srg-extractor:$PATH
+module load htslib/gcc/64/1.9 samtools bwa vcftools bedtools
+export PATH=/lustre/nobackup/WUR/ABGC/moiti001/TOOLS/Platypus_0.8.1:$PATH
+# export PATH=/lustre/nobackup/WUR/ABGC/moiti001/TOOLS/srg-extractor:$PATH
 
-        ./fastgbs_V2.sh {input.parameters}
+./fastgbs_V2.sh {input.parameters}
         """
 
 rule zip_index_vcf:
