@@ -3,6 +3,7 @@ LONGREADS: qcpass.fq.gz
 PREFIX: meagre
 GENOME_SIZE: 6.8e8
 PARAMETERS_FILE: parameters_meagre.txt
+RUN_SCAFFOLDING: Y
 
 # genome alignment parameters:
 COMPARISON_GENOME: 
@@ -19,3 +20,4 @@ COMPARISON_GENOME:
 
 MIN_ALIGNMENT_LENGTH: 0
 MIN_QUERY_LENGTH: 0
+RUN_SCAFFOLDING: Y
