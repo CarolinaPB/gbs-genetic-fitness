@@ -5,8 +5,9 @@
 Click [here](https://github.com/CarolinaPB/snakemake-template/blob/master/Short%20introduction%20to%20Snakemake.pdf) for an introduction to Snakemake
 
 ## ABOUT
-This pipeline starts by scaffolding your genome using long reads. Then it performs GBS using FastGBS2 (it skips the imputation step) and outputs stats and a PCA.  
+This pipeline performs GBS using FastGBS2 (it skips the imputation step) and outputs stats and a PCA.  
 In order to assess genetic fitness, it calculates a distance matrix, IBD and inbreeding.
+There are two optional steps: scaffolding the assembly using long reads (first step of the pipeline) and whole genome alignment with another species/assembly.
 
 #### Tools used:
 - Seqtk - convert fasta to one line fasta
@@ -16,11 +17,10 @@ In order to assess genetic fitness, it calculates a distance matrix, IBD and inb
 - FastGBS2 - perform GBS
 - Bcftools - get stats from vcf
 - Plink - calculate distance matrix, IBD, PCA, inbreeding
+- Minimap2 - genome alignment
+- R - pafCoordsDotPlotly - plot genome alignment
 
-#### If you want to skip the scaffolding step do this:
-1. Add your genome to the `refgenome` directory and name it as <prefix>.fa (it's important to have the .fa extension). 
-2. Index with bwa by running the `index_genome.sh` script in the `scripts` directory from the main directory as `./scripts/index_genome.sh`
-You will get two files with assembly stats, but both will have the same information.
+
 
 | ![DAG](https://github.com/CarolinaPB/gbs-genetic-fitness/blob/master/workflow.png) |
 |:--:|
@@ -186,6 +186,15 @@ LONGREADS: longreads.fq
 PREFIX: <prefix>
 GENOME_SIZE: <approximate genome size>
 PARAMETERS_FILE: <parameters file>
+RUN_SCAFFOLDING: <Y/N>
+ 
+# genome alignment parameters:
+COMPARISON_GENOME: 
+  <species>: /path/to/genome/fasta
+
+# filter alignments less than cutoff X bp
+MIN_ALIGNMENT_LENGTH: 10000
+MIN_QUERY_LENGTH: 50000
 ```
 
 - ASSEMBLY - path to the assembly file
@@ -193,6 +202,14 @@ PARAMETERS_FILE: <parameters file>
 - PREFIX -  prefix for the created files
 - GENOME_SIZE - approximate genome size ```haploid genome size (bp)(e.g. '3e9' for human genome)``` from [longstitch](https://github.com/bcgsc/longstitch#full-help-page)
 - PARAMETERS_FILE - name of FastGBS2 parameters file
+- RUN_SCAFFOLDING - `Y` if you want to run the scaffolding step, `N` if you don't
+- COMPARISON_GENOME - genome for whole genome comparison. Add your species name and the path to the fasta file. ex: `chicken: /path/to/chicken.fna.gz`. You can add several genomes, one on each line.   
+ - If you don't want to run the genome alignment step, comment out 
+```
+COMPARISON_GENOME: 
+ <species>: /path/to/genome/fasta
+```
+- MIN_ALIGNMENT_LENGTH and MIN_QUERY_LENGTH - parameters for plotting. If your plot is coming out blank or if there's an error with the plotting step, try lowering these thresholds. This happens because the alignments are not large enough.
 
  ## Working directory
  There are many files and directories that you don't need to pay attention to, but they need to be there for the pipeline to run.  
