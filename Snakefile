@@ -9,41 +9,48 @@ LONGREADS = config["LONGREADS"]
 PREFIX = config["PREFIX"]
 GENOME_SIZE = config["GENOME_SIZE"]
 PARAMETERS_FILE = config["PARAMETERS_FILE"]
+RUN_SCAFFOLDING = config["RUN_SCAFFOLDING"]
 
 idx_list = [".amb", ".ann", ".bwt", ".pac", ".sa", ".fai"]
 
-MIN_ALIGNMENT_LENGTH = config["MIN_ALIGNMENT_LENGTH"]
-MIN_QUERY_LENGTH = config["MIN_QUERY_LENGTH"]
 
+# If COMPARISON_GENOME is set, compute whole genome alignment between polished assembly and comparison genome
 if "COMPARISON_GENOME" in config:
-    for species in config["COMPARISON_GENOME"]:
-        comp_genome_results = expand("genome_alignment/{prefix}_{species}.png", prefix=PREFIX, species = species)
-        COMP_GENOME = config["COMPARISON_GENOME"][species]
+    comp_genome_results = expand("results/genome_alignment/{prefix}_{species}.png", prefix=PREFIX, species = config["COMPARISON_GENOME"].keys())
+    MIN_ALIGNMENT_LENGTH = config["MIN_ALIGNMENT_LENGTH"]
+    MIN_QUERY_LENGTH = config["MIN_QUERY_LENGTH"]
 else:
     comp_genome_results = []
 
+if RUN_SCAFFOLDING == "N":
+    extra_genome_stats = []
+elif RUN_SCAFFOLDING == "Y":
+    extra_genome_stats = f"results/assembly_stats_{PREFIX}_new.txt"
 
-localrules: one_line_fasta, get_assembly_stats, plink_dist_matr, plink_IBD, bcftools_stats, plink_inbreeding, plot_pca, cleanup_data_dir
+
+localrules: one_line_fasta, get_assembly_stats, plink_dist_matr, plink_IBD, bcftools_stats, plink_inbreeding, plot_pca, create_fastgbs_checkpoint_file, create_file_log, plot_aligned_genomes
 rule all:
     input:
         files_log,
-        # expand("{prefix}_oneline.fa", prefix=PREFIX),
-        # expand("refgenome/{prefix}.fa{idx}", prefix=PREFIX, idx = idx_list),
-        # expand("results/assembly_stats_{prefix}_{version}.txt", prefix = PREFIX, version = ["old", "new"]),
+        expand("results/assembly_stats_{prefix}_{asm}.txt", asm = "ref", prefix=PREFIX),
         expand("results/{prefix}_FastGBS_platypus.recode.vcf.gz", prefix = PREFIX),
-        # expand("results/{prefix}_FastGBS_platypus_log.txt", prefix = PREFIX),
         expand("results/{prefix}_FastGBS_platypus.recode.vcf.gz.stats", prefix=PREFIX),
         expand("fitness/{prefix}.dist.gz", prefix=PREFIX),
         expand("fitness/{prefix}.genome.gz", prefix=PREFIX),
-        expand("{prefix}_fastgbs_check.done", prefix=PREFIX),
         expand("fitness/{prefix}.het.gz", prefix=PREFIX),
-        # expand("results/{prefix}.eigenvec", prefix=PREFIX),
-        # expand("results/{prefix}.eigenval", prefix=PREFIX),
         expand('results/{prefix}_pca.html', prefix=PREFIX),
-        expand("{prefix}.cleanup.done", prefix=PREFIX),
-        comp_genome_results
+        expand("{prefix}_fast_gbs.done", prefix=PREFIX),
+        comp_genome_results,
+        extra_genome_stats
         
 
+        # expand("{prefix}_fastgbs_check.done", prefix=PREFIX),
+        # expand("results/{prefix}_FastGBS_platypus_log.txt", prefix = PREFIX),
+        # expand("results/{prefix}.eigenvec", prefix=PREFIX),
+        # expand("results/{prefix}.eigenval", prefix=PREFIX),
+        # expand("{prefix}_oneline.fa", prefix=PREFIX),
+        # expand("refgenome/{prefix}.fa{idx}", prefix=PREFIX, idx = idx_list),
+        # expand("results/assembly_stats_{prefix}_{version}.txt", prefix = PREFIX, version = ["old", "new"]),
 
 
 rule one_line_fasta:
@@ -77,10 +84,15 @@ rule scaffolding_long_reads:
         longstitch ntLink-arks draft={params.draft} reads={params.reads} G={params.size}
         """
 
+def run_scaffolding(RUN_SCAFFOLDING):
+    if RUN_SCAFFOLDING == "Y":
+        return("{prefix}_oneline.k32.w100.ntLink-arks.longstitch-scaffolds.fa")
+    elif RUN_SCAFFOLDING == "N":
+        return(ASSEMBLY) 
 
 rule prep_ref:
     input:
-        ref = "{prefix}_oneline.k32.w100.ntLink-arks.longstitch-scaffolds.fa"
+        run_scaffolding(RUN_SCAFFOLDING)
     output:
         refgenome = "refgenome/{prefix}.fa",
         idx = multiext("refgenome/{prefix}.fa", ".amb", ".ann", ".bwt", ".pac", ".sa", ".fai")
@@ -92,31 +104,33 @@ module load samtools
 module load htslib
 module load bwa
 
-cp {input.ref} {output.refgenome}
+cp {input} {output.refgenome}
 bwa index -a bwtsw {output.refgenome}
 samtools faidx {output.refgenome}
         """
 
+def assembly_stats_input(wildcards):
+    if wildcards.asm == "ref":
+        return(ASSEMBLY)
+    if wildcards.asm == "new":
+        return("refgenome/{prefix}.fa")
+
+
 rule get_assembly_stats:
     input:
-        new = "refgenome/{prefix}.fa",
-        old = ASSEMBLY
+        assembly_stats_input
     output:
-        old = "results/assembly_stats_{prefix}_old.txt",
-        new = "results/assembly_stats_{prefix}_new.txt"
+        "results/assembly_stats_{prefix}_{asm}.txt",
     message:
         'Rule {rule} processing'
     params:
         script = os.path.join(workflow.basedir, "scripts/get_assembly_stats.py"),
     log:
-        err_old = "logs_slurm/get_assembly_stats_{prefix}_old.err",
-        err_new = "logs_slurm/get_assembly_stats_{prefix}_new.err",
+        err = "logs_slurm/get_assembly_stats_{prefix}_{asm}.err",
     shell:
         """
-        python {params.script} {input.new} > {output.new} 2> {log.err_new}
-        python {params.script} {input.old} > {output.old} 2> {log.err_old}
+        python {params.script} {input} > {output} 2> {log.err}
         """
-
 
 rule create_fastgbs_checkpoint_file:
     input:
@@ -137,11 +151,10 @@ rule run_fast_GBS2:
         checkpoint = rules.create_fastgbs_checkpoint_file.output
     output:
         # vcf = "results/{prefix}_FastGBS_platypus.vcf",
-        # vcf_filtered ="results/{prefix}_FastGBS_platypus.recode.vcf",
+        vcf_filtered ="results/{prefix}_FastGBS_platypus.recode.vcf",
         # log = "results/{prefix}_FastGBS_platypus_log.txt",
         check = touch("{prefix}_fast_gbs.done"),
         # GT = "results/{prefix}_FastGBS_platypus.recode.GT.FORMAT",
-
     message:
         'Rule {rule} processing'
     conda:
@@ -269,45 +282,46 @@ rule plot_pca:
     shell:
         "python {params.pyscript} --eigenval {input.eigenval} --eigenvec {input.eigenvec} --out {params.output}"
 
-rule cleanup_data_dir:
+        
+def get_ref_path(wildcards):
+    '''
+    Get genome path for comparison species
+    '''
+    return(config["COMPARISON_GENOME"][wildcards.species])
+
+
+rule align_genomes:
     input:
-        rules.zip_index_vcf.output
+        assembly = rules.prep_ref.output.refgenome,
+        comparison = get_ref_path
     output:
-        touch("{prefix}.cleanup.done")
+        "results/genome_alignment/{prefix}_vs_{species}.paf"
     message:
         'Rule {rule} processing'
     shell:
-        'rm data/*.fastq'
+        """
+minimap2 -t 12 -cx asm5 {input.comparison} {input.assembly} > {output}
+        """
 
-if "COMPARISON_GENOME" in config:
-    rule align_genomes:
-        input:
-            assembly = rules.prep_ref.output.refgenome,
-            comparison = COMP_GENOME
-        output:
-            "genome_alignment/{prefix}_vs_{species}.paf"
-        message:
-            'Rule {rule} processing'
-        shell:
-            """
-    minimap2 -t 12 -cx asm20 {input.comparison} {input.assembly} > {output}
-            """
+rule plot_aligned_genomes:
+    input:
+        rules.align_genomes.output
+    output:
+        "results/genome_alignment/{prefix}_{species}.png"
+    message:
+        'Rule {rule} processing'
+    params:
+        script = os.path.join(workflow.basedir, "scripts/pafCoordsDotPlotly.R"),
+        min_alignment_length = MIN_ALIGNMENT_LENGTH,
+        min_query_length = MIN_QUERY_LENGTH, 
+        outdir = "results/genome_alignment/"
+    shell:
+        """
+        module load R
+        Rscript {params.script} -i {input} -o {wildcards.prefix}_{wildcards.species} -s -t -x -m {params.min_alignment_length} -q {params.min_query_length} -l
+        mv {wildcards.prefix}_{wildcards.species}.png {params.outdir}
+        """
 
-    rule plot_aligned_genomes:
-        input:
-            rules.align_genomes.output
-        output:
-            # "genome_alignment/{prefix}.html"
-            "genome_alignment/{prefix}_{species}.png"
-        message:
-            'Rule {rule} processing'
-        params:
-            script = os.path.join(workflow.basedir, "scripts/pafCoordsDotPlotly.R"),
-            min_alignment_length = MIN_ALIGNMENT_LENGTH,
-            min_query_length = MIN_QUERY_LENGTH
-        shell:
-            """
-            module load R
-            Rscript {params.script} -i {input} -o {wildcards.prefix}_{wildcards.species} -s -t -x -m {params.min_alignment_length} -q {params.min_query_length} -l
-            mv {wildcards.prefix}_{wildcards.species}.png genome_alignment/
-            """
+onsuccess:
+    print("Workflow done. Cleaning up....")
+    shell("rm data/*.fastq")
