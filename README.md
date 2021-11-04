@@ -248,6 +248,8 @@ The most important files are and directories are:
   - **Summary_By_Samples_python.txt** and **Summary_By_Sites_python.txt** GBS summary stats from FastGBS2
   - **{prefix}_pca.html** interactive PCA where you can zoom in and hover a certain point to get sample name (open with browser)
   - **{prefix}.eigenvec** and **{prefix}.eigenval** output of PCA
+  - **genome_alignment** - directory with results from whole genome alignment
+    - **{prefix}_{other_species}.png** whole genome alignment plot
  - **fitness** directory that contains results from fitness analysis
    - **{prefix}.het.gz** inbreeding results: [Plink](https://www.cog-genomics.org/plink/1.9/basic_stats) computes observed and expected autosomal homozygous genotype counts for each sample, and reports method-of-moments F coefficient estimates 
    - **{prefix}.genome.gz** IBD results (see [here](https://www.cog-genomics.org/plink/1.9/ibd))
