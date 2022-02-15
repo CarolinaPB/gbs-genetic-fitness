@@ -5,7 +5,7 @@
 Click [here](https://github.com/CarolinaPB/snakemake-template/blob/master/Short%20introduction%20to%20Snakemake.pdf) for an introduction to Snakemake
 
 ## ABOUT
-This pipeline performs GBS using FastGBS2 (it skips the imputation step) and outputs stats and a PCA.  
+This pipeline performs GBS SNP calling using FastGBS2 (it skips the imputation step) and outputs stats and a PCA.  
 In order to assess genetic fitness, it calculates a distance matrix, IBD and inbreeding.
 There are two optional steps: scaffolding the assembly using long reads (first step of the pipeline) and whole genome alignment with another species/assembly.
 
